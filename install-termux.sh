@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="${HOME}/ai-tools"
+BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mkdir -p "$ROOT"
 cd "$ROOT"
 
@@ -21,8 +22,8 @@ cat <<EOF
 Installed and built OpenClaude.
 
 Start the bridge in this session:
-  cd "$ROOT"
-  node chatgpt-openclaude-bridge.mjs
+  cd "$BRIDGE_DIR"
+  node "$BRIDGE_DIR/chatgpt-openclaude-bridge.mjs"
 
 In a second Termux session, run OpenClaude from your project:
   cd ~/projects/my-project
