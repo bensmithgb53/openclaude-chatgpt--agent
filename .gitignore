@@ -1,0 +1,16 @@
+# Credentials and cookies
+cookies.json
+*.cookies.json
+.env
+.env.*
+!.env.example
+
+# Dependencies and generated builds
+node_modules/
+openclaude/
+chatgpt-unofficial-api/
+dist/
+
+# Local logs and sessions
+*.log
+.openclaude/
