@@ -3,6 +3,15 @@ set -euo pipefail
 
 ROOT="${HOME}/ai-tools"
 BRIDGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+for command_name in git node npm npx; do
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    echo "Missing required command: $command_name" >&2
+    echo "Run: pkg install nodejs-lts git" >&2
+    exit 1
+  fi
+done
+
 mkdir -p "$ROOT"
 cd "$ROOT"
 
