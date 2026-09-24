@@ -20,11 +20,11 @@ Install Termux from F-Droid rather than the Play Store. Update packages and inst
 
 ```bash
 pkg update && pkg upgrade
-pkg install nodejs-lts git ripgrep
+pkg install nodejs-lts git ripgrep gh
 mkdir -p ~/ai-tools
 ```
 
-This repository is private. Authenticate GitHub on the phone first, or clone it using a GitHub-authenticated HTTPS method. If the GitHub CLI is available in your Termux package sources:
+This repository is private. Authenticate GitHub on the phone before cloning:
 
 ```bash
 gh auth login
