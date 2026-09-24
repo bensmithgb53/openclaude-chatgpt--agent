@@ -8,7 +8,12 @@
  */
 import http from 'node:http';
 import { randomUUID } from 'node:crypto';
-import { ChatGPT } from './chatgpt-unofficial-api/client/index.mjs';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const BRIDGE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const CLIENT_MODULE = process.env.CHATGPT_CLIENT_MODULE || path.join(BRIDGE_DIR, 'chatgpt-unofficial-api/client/index.mjs');
+const { ChatGPT } = await import(pathToFileURL(CLIENT_MODULE).href);
 
 const PORT = Number(process.env.PORT || 8787);
 const HOST = process.env.HOST || '127.0.0.1';

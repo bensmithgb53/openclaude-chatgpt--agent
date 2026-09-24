@@ -9,8 +9,8 @@ cd "$ROOT"
 if [ ! -d openclaude/.git ]; then
   git clone https://github.com/Gitlawb/openclaude.git openclaude
 fi
-if [ ! -d chatgpt-unofficial-api/.git ]; then
-  git clone https://github.com/etrnkz/chatgpt-unofficial-api.git chatgpt-unofficial-api
+if [ ! -d "$BRIDGE_DIR/chatgpt-unofficial-api/.git" ]; then
+  git clone https://github.com/etrnkz/chatgpt-unofficial-api.git "$BRIDGE_DIR/chatgpt-unofficial-api"
 fi
 
 cd "$ROOT/openclaude"

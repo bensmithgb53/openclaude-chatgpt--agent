@@ -1,6 +1,6 @@
 # OpenClaude + ChatGPT Unofficial Bridge for Termux
 
-This package connects **OpenClaude** to the `chatgpt-unofficial-api` client through a local OpenAI-compatible adapter. OpenClaude provides the coding-agent tools; the adapter translates its requests to the unofficial ChatGPT client.
+This repository connects **OpenClaude** to the `chatgpt-unofficial-api` client through a local OpenAI-compatible adapter. OpenClaude provides the coding-agent tools; the adapter translates its requests to the unofficial ChatGPT client.
 
 ## What was tested
 
@@ -16,46 +16,68 @@ This does not guarantee that ChatGPT's website endpoint will remain compatible. 
 
 ## Install on Termux
 
-Install Termux from F-Droid rather than the Play Store, then run:
+Install Termux from F-Droid rather than the Play Store. Update packages and install the basics:
 
 ```bash
 pkg update && pkg upgrade
 pkg install nodejs-lts git ripgrep
 mkdir -p ~/ai-tools
-cd ~/ai-tools
-git clone https://github.com/Gitlawb/openclaude.git openclaude
-git clone https://github.com/etrnkz/chatgpt-unofficial-api.git chatgpt-unofficial-api
 ```
 
-Copy `chatgpt-openclaude-bridge.mjs` from this package into `~/ai-tools/`.
-
-Install and build OpenClaude:
+This repository is private. Authenticate GitHub on the phone first, or clone it using a GitHub-authenticated HTTPS method. If the GitHub CLI is available in your Termux package sources:
 
 ```bash
-cd ~/ai-tools/openclaude
-npm install
-npx --yes bun@1.3.13 run build
+gh auth login
 ```
 
-The `npx bun` command avoids requiring a native Bun installation in Termux.
-
-## Start it
-
-In one Termux session, start the local adapter:
+Then clone this repository using its exact name:
 
 ```bash
-cd ~/ai-tools
-export CHATGPT_COOKIES_FILE="$HOME/ai-tools/chatgpt-unofficial-api/client/cookies.json"
+git clone https://github.com/bensmithgb53/openclaude-chatgpt--agent.git \
+  ~/ai-tools/openclaude-chatgpt--agent
+cd ~/ai-tools/openclaude-chatgpt--agent
+bash install-termux.sh
+```
+
+The installer clones the upstream projects directly from their official repositories and builds OpenClaude:
+
+```text
+https://github.com/Gitlawb/openclaude.git
+https://github.com/etrnkz/chatgpt-unofficial-api.git
+```
+
+The OpenClaude build is stored under `~/ai-tools/openclaude`. The unofficial client is stored beside this bridge inside the cloned repository.
+
+## Start the bridge
+
+In one Termux session:
+
+```bash
+cd ~/ai-tools/openclaude-chatgpt--agent
 node chatgpt-openclaude-bridge.mjs
 ```
 
-Cookies are optional for ordinary text chat. If you use a cookies file, copy it into the client directory and protect it:
+You should see:
+
+```text
+chatgpt-openclaude-bridge listening on http://127.0.0.1:8787/v1
+```
+
+Cookies are optional for ordinary text chat. If you use a cookies file, place it at:
 
 ```bash
-chmod 600 ~/ai-tools/chatgpt-unofficial-api/client/cookies.json
+~/ai-tools/openclaude-chatgpt--agent/chatgpt-unofficial-api/client/cookies.json
+```
+
+Then protect it:
+
+```bash
+chmod 600 ~/ai-tools/openclaude-chatgpt--agent/chatgpt-unofficial-api/client/cookies.json
 ```
 
 Do not commit, upload, or share that file. It is equivalent to an account credential.
+
+## Run OpenClaude
 
 Open a second Termux session, enter the project you want the agent to edit, and run:
 
@@ -81,11 +103,31 @@ printf '%s\n' 'Read the project tests, fix the failing code, run the tests, and 
   | node ~/ai-tools/openclaude/dist/cli.mjs --print
 ```
 
+## Updating later
+
+Update the bridge repository first:
+
+```bash
+cd ~/ai-tools/openclaude-chatgpt--agent
+git pull
+```
+
+Update the upstream projects separately:
+
+```bash
+cd ~/ai-tools/openclaude
+git pull
+npx --yes bun@1.3.13 run build
+
+cd ~/ai-tools/openclaude-chatgpt--agent/chatgpt-unofficial-api
+git pull
+```
+
+If either upstream project changes its API or tool-call format, the bridge may need a new update. Test it by starting the bridge and asking OpenClaude to read a small file.
+
 ## Keep the agent scoped
 
-Always launch OpenClaude from the project directory, not from your entire home directory. Start with normal permissions. Only use a permissive mode when you understand the consequences.
-
-Before allowing an agent to operate on a real project, make a Git checkpoint:
+Always launch OpenClaude from the project directory, not from your entire home directory. Before allowing an agent to operate on a real project, make a Git checkpoint:
 
 ```bash
 git add -A && git commit -m 'checkpoint before AI changes'
@@ -97,16 +139,16 @@ Review the diff afterward:
 git diff
 ```
 
-Do not let it run commands such as `rm -rf`, `git reset --hard`, `git push`, `npm publish`, or deployment commands unless you have reviewed the exact command and intend to run it.
+Do not allow unreviewed commands such as `rm -rf`, `git reset --hard`, `git push`, `npm publish`, or deployment commands.
 
 ## Troubleshooting
 
-If OpenClaude says that the model or provider is missing, verify that the bridge is still running and test it with:
+If OpenClaude says that the model or provider is missing, verify that the bridge is running:
 
 ```bash
 curl http://127.0.0.1:8787/v1/models
 ```
 
-If ChatGPT reports unusual activity, Cloudflare errors, or proof-of-work failures, the unofficial client has been blocked or changed. There is no reliable local fix for that; use an official OpenAI-compatible provider or a local Ollama model instead.
+If ChatGPT reports unusual activity, Cloudflare errors, or proof-of-work failures, the unofficial client has been blocked or changed. Use an official OpenAI-compatible provider or a local Ollama model instead.
 
-If the model returns ordinary text instead of a tool call, OpenClaude may not be able to continue an agent workflow. The bridge uses strict JSON instructions to reduce this problem, but this is inherently less reliable than a provider with native function/tool calling.
+If the model returns ordinary text instead of a tool call, OpenClaude may not be able to continue an agent workflow. The bridge uses strict JSON instructions to reduce this problem, but this is inherently less reliable than a provider with native function calling.
