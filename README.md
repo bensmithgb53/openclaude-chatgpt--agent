@@ -47,6 +47,30 @@ The installer clones and builds the upstream projects automatically:
 - [OpenClaude](https://github.com/Gitlawb/openclaude)
 - [ChatGPT unofficial client](https://github.com/etrnkz/chatgpt-unofficial-api)
 
+### Android build note
+
+The OpenClaude source build uses Bun, and Bun's Linux binary does not run directly on Android. On a real Android Termux installation, the installer clones both projects and then stops with the supported Ubuntu-in-Termux commands. Run:
+
+```bash
+pkg install proot-distro
+proot-distro install ubuntu
+proot-distro login ubuntu
+apt update && apt install -y curl unzip git
+curl -fsSL https://bun.sh/install | bash
+source ~/.bashrc
+cd /data/data/com.termux/files/home/ai-tools/openclaude
+bun install
+bun run build
+exit
+```
+
+Then start the bridge from ordinary Termux:
+
+```bash
+cd ~/ai-tools/openclaude-chatgpt--agent
+node chatgpt-openclaude-bridge.mjs
+```
+
 ## Run the bridge
 
 In the first Termux session:

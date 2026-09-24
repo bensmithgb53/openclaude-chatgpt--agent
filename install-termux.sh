@@ -22,6 +22,31 @@ if [ ! -d "$BRIDGE_DIR/chatgpt-unofficial-api/.git" ]; then
   git clone https://github.com/etrnkz/chatgpt-unofficial-api.git "$BRIDGE_DIR/chatgpt-unofficial-api"
 fi
 
+if [ "$(uname -o 2>/dev/null || true)" = "Android" ] || [ -n "$(getprop ro.build.version.release 2>/dev/null || true)" ]; then
+  cat >&2 <<'EOF'
+Android detected. OpenClaude's Bun build cannot run directly on Android.
+The upstream-supported route is to build OpenClaude inside Ubuntu via proot-distro.
+
+Run these commands in Termux, then rerun only the build commands inside Ubuntu:
+
+  pkg install proot-distro
+  proot-distro install ubuntu
+  proot-distro login ubuntu
+  apt update && apt install -y curl unzip git
+  curl -fsSL https://bun.sh/install | bash
+  source ~/.bashrc
+  cd /data/data/com.termux/files/home/ai-tools/openclaude
+  bun install
+  bun run build
+
+Then exit Ubuntu and start the bridge from Termux:
+
+  cd ~/ai-tools/openclaude-chatgpt--agent
+  node chatgpt-openclaude-bridge.mjs
+EOF
+  exit 2
+fi
+
 cd "$ROOT/openclaude"
 npm install
 npx --yes bun@1.3.13 run build
